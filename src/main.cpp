@@ -41,7 +41,8 @@ int main() {
             auto target_delay = 1000 / key.cps;
 
             if (config.randomized) {
-                target_delay += rand() % (key.cps / 2);
+                int variation = target_delay * 0.30;
+                target_delay += rand() % variation;
             }
 
             auto elapsed = std::chrono::duration_cast<duration>(clock::now() - start).count();
