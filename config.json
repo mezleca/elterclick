@@ -1,0 +1,10 @@
+{
+    "keys": [
+        {
+            "trigger": 9,
+            "target": 1,
+            "cps": 14
+        }
+    ],
+    "randomized": false
+}

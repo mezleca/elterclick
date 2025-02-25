@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdlib>
 #include <iostream>
 #include <unistd.h>
@@ -10,19 +12,21 @@
 #include <X11/Xlib.h>
 #include <libevdev-1.0/libevdev/libevdev.h>
 
+enum KeyList {
+    INVALID = -1,
+    LEFT = 1,
+    MIDDLE,
+    RIGHT,
+    MOUSE4 = 8,
+    MOUSE5
+};
+
 namespace Input {
 
-    enum KeyList {
-        INVALID = -1,
-        LEFT = 1,
-        MIDDLE,
-        RIGHT,
-        MOUSE4 = 8,
-        MOUSE5
-    };
-
     void initialize();
+    void click(KeyList vKey);
     void free_input();
+    void update_event();
     bool is_pressing_key(KeyList vKey);
     std::string mouse_lookup();
 
@@ -30,5 +34,4 @@ namespace Input {
     extern Display* XDisplay;
     extern libevdev *dev;
     extern int xi_op_code;
-    extern bool monitor;
 }

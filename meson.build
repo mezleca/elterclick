@@ -3,18 +3,17 @@ project('click', 'cpp',
 )
 
 libevdev = dependency('libevdev')
-libudev = dependency('libudev')
-libinput = dependency('libinput')
 libx11 = dependency('x11')
 libxinput = dependency('xi')
+libxtest = dependency('xtst')
+libjsoncpp = dependency('jsoncpp', fallback: ['jsoncpp', 'jsoncpp_dep'])
 
-# TODO: better way to include extra dependencies
 src = files(
     'src/input/input.cpp',
     'src/input/input.hpp',
-    'src/main.cpp',
-    'dependencies/json/json.cpp',
-    'dependencies/json/json.hpp'
+    'src/config/config.cpp',
+    'src/config/config.hpp',
+    'src/main.cpp'
 )
 
-executable('click', src, dependencies: [libevdev, libudev, libinput, libx11, libxinput])
+executable('click', src, dependencies: [libevdev, libx11, libxinput, libxtest, libjsoncpp])
