@@ -1,6 +1,6 @@
 #include "config.hpp"
 #include <regex>
-#include <json/json.h>
+#include <fcntl.h>
 
 std::string default_config_content =
 R"({
@@ -17,10 +17,31 @@ R"({
 
 namespace Config {
 
+    bool file_exists(std::string name) {
+        if (FILE* file = fopen(name.c_str(), "r")) {
+            fclose(file);
+            return true;
+        }
+        return false;
+    }
+
+    void create_file(std::string name, std::string content = "") {
+        std::ofstream file(name);
+        file << content;
+        file.close();
+    }
+
     void initialize() {
         
-        std::ifstream config_file("config.json");
+        std::string file_name = "config.json";
         KeyData default_key;
+
+        if (!file_exists(file_name)) {          
+            create_file(file_name, default_config_content);
+            config.keys.push_back(default_key);
+        }
+
+        std::ifstream config_file(file_name);
 
         // check if the config file exists, if not create a placeholder one
         if (!config_file.is_open()) {
@@ -30,6 +51,7 @@ namespace Config {
             std::ofstream new_config("./config.json");
             new_config << default_config_content;
             config.keys.push_back(default_key);
+            new_config.close();
         }
 
         Json::Value root;
@@ -87,5 +109,35 @@ namespace Config {
         }
 
         printf("intialized config\n");
+    }
+
+    bool save() {
+
+        Json::Value root;
+        Json::StreamWriterBuilder wbuilder;
+        wbuilder["indentation"] = "\t";
+
+        Json::Value keys(Json::arrayValue);
+
+        root["randomized"] = config.randomized;
+
+        for (size_t i = 0; i < config.keys.size(); i++) {
+
+            KeyData current_key = config.keys.at(i);
+            Json::Value key(Json::objectValue);
+
+            key["trigger"] = current_key.trigger;
+            key["target"] = current_key.target;
+            key["cps"] = 0;
+
+            keys.append(key);
+        }
+
+        root["keys"] = keys;
+
+        std::string config_content = Json::writeString(wbuilder, root);
+        create_file("config.json", config_content);
+
+        return true;
     }
 }

@@ -1,10 +1,11 @@
 {
-    "keys": [
-        {
-            "trigger": 9,
-            "target": 1,
-            "cps": 25
-        }
-    ],
-    "randomized": true
+	"keys" : 
+	[
+		{
+			"cps" : 16,
+			"target" : 1,
+			"trigger" : 9
+		}
+	],
+	"randomized" : true
 }

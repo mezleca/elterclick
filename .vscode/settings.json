@@ -75,5 +75,6 @@
         "regex": "cpp"
     },
     "mesonbuild.configureOnOpen": true,
-    "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild"
+    "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
+    "C_Cpp.default.compileCommands": "/home/rel/stuff/clicklinux/builddir/compile_commands.json"
 }

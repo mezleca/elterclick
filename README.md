@@ -7,7 +7,7 @@
 - config system
 
 # TODO
-- [ ] finish config system
+- [x] finish config system
 - [ ] imgui menu
 - [ ] windows support
 - [ ] keyboard trigger/target support
