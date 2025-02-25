@@ -3,7 +3,7 @@
 ## features
 - simulate input (omg noway!!!)
 - create multiple trigger keys with differents target and cps
-- randomize function to make it more "legit"
+- randomized cps
 - config system
 
 # TODO
