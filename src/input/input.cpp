@@ -2,6 +2,7 @@
 #include <X11/extensions/XInput2.h>
 #include <X11/extensions/XTest.h>
 #include <fcntl.h>
+#include <src/config/config.hpp>
 
 namespace Input {
 
@@ -173,5 +174,45 @@ namespace Input {
         }
 
         return false;
+    }
+}
+
+namespace Autoclick {
+
+    void update() {
+
+        using clock = std::chrono::steady_clock;
+        using duration = std::chrono::milliseconds;    
+     
+        auto start = clock::now();
+
+        // check if theres something being pressed
+        if (config.keys.empty()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            return;
+        }
+
+        for (const KeyData& key : config.keys) {
+            
+            if (!Input::is_pressing_key(key.trigger)) {
+                continue;
+            }
+
+            Input::click(key.target);
+
+            auto target_delay = 1000 / key.cps;
+
+            if (config.randomized) {
+                int variation = target_delay * 0.30;
+                target_delay += rand() % variation;
+            }
+
+            auto elapsed = std::chrono::duration_cast<duration>(clock::now() - start).count();
+            int delay = static_cast<int>(target_delay - elapsed);
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(
+                static_cast<int>(delay)
+            ));
+        }
     }
 }

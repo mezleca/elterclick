@@ -7,6 +7,7 @@ libx11 = dependency('x11')
 libxinput = dependency('xi')
 libxtest = dependency('xtst')
 libjsoncpp = dependency('jsoncpp', fallback: ['jsoncpp', 'jsoncpp_dep'])
+libglfw = dependency('glfw3', fallback: ['glfw3', 'glfw_dep'])
 
 src = files(
     'src/input/input.cpp',
@@ -16,4 +17,4 @@ src = files(
     'src/main.cpp'
 )
 
-executable('click', src, dependencies: [libevdev, libx11, libxinput, libxtest, libjsoncpp])
+executable('click', src, dependencies: [libevdev, libx11, libxinput, libxtest, libjsoncpp, libglfw])

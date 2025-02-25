@@ -21,6 +21,10 @@ enum KeyList {
     MOUSE5
 };
 
+namespace Autoclick{
+    void update();
+}
+
 namespace Input {
 
     std::string mouse_lookup();
