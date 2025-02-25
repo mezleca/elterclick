@@ -1,4 +1,4 @@
-## [this](https://github.com/mezleca/elterpy) but in c++
+# [this](https://github.com/mezleca/elterpy) but in c++
 
 ## features
 - simulate input (omg noway!!!)
