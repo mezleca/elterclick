@@ -3,7 +3,7 @@
         {
             "trigger": 9,
             "target": 1,
-            "cps": 14
+            "cps": 25
         }
     ],
     "randomized": false

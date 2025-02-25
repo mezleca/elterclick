@@ -11,19 +11,15 @@ int main() {
     using clock = std::chrono::steady_clock;
     using duration = std::chrono::milliseconds;
 
-    // xorg and shit initialization
-    Input::initialize();
+    // create a new thread to input event loop
+    std::thread input_thread(Input::initialize);
 
     // config yep
     Config::initialize();
     
-    // start auto click logic 
+    // start auto click loop 
     // @TODO: move this to somewhere else
-    // @TODO: a way to make 2 keys at time work
     while (true) {
-
-        // next event
-        Input::update_event();
         
         auto start = clock::now();
 
@@ -49,7 +45,7 @@ int main() {
             }
 
             auto elapsed = std::chrono::duration_cast<duration>(clock::now() - start).count();
-            int delay = static_cast<int>(target_delay - elapsed - 5);
+            int delay = static_cast<int>(target_delay - elapsed);
 
             std::this_thread::sleep_for(std::chrono::milliseconds(
                 static_cast<int>(delay)
@@ -57,7 +53,7 @@ int main() {
         }
     }
 
-    Input::free_input();
+    input_thread.join();
     
     return 0;
 }

@@ -23,12 +23,11 @@ enum KeyList {
 
 namespace Input {
 
+    std::string mouse_lookup();
+
     void initialize();
     void click(KeyList vKey);
-    void free_input();
-    void update_event();
     bool is_pressing_key(KeyList vKey);
-    std::string mouse_lookup();
 
     extern std::unordered_set<KeyList> keys;
     extern Display* XDisplay;

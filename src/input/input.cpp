@@ -74,42 +74,6 @@ namespace Input {
         return "";
     }
 
-    void update_event() {
-
-        if (XPending(XDisplay) == 0) {
-            return;
-        }
-
-        // get current event
-        XEvent event;
-        XNextEvent(XDisplay, &event);
-
-        if (event.type == GenericEvent && event.xcookie.extension == xi_op_code) {
-
-            if (XGetEventData(XDisplay, &event.xcookie)) {
-
-                XIRawEvent* raw_event = (XIRawEvent*)event.xcookie.data;
-
-                // erm what the sigma
-                if (raw_event->detail > KeyList::MOUSE5) {
-                    printf("yep: %i\n", raw_event->type);
-                    return;
-                }
-
-                KeyList key_value = (KeyList)raw_event->detail;
-                
-                if (raw_event->evtype == XI_RawButtonPress) {
-                    keys.insert(key_value);
-                }
-                else if (raw_event->evtype == XI_RawButtonRelease) {
-                    keys.erase(key_value);
-                }
-            }
-            
-            XFreeEventData(XDisplay, &event.xcookie);
-        }
-    }
-
     void initialize() {
         
         // could pass NULL but yeah
@@ -145,7 +109,46 @@ namespace Input {
         XISelectEvents(XDisplay, root_window, &mask, 1);
 
         XSync(XDisplay, 0);
-        free(mask.mask);    
+        free(mask.mask);
+
+        while(true) {
+            
+            if (XPending(XDisplay) == 0) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                continue;
+            }
+    
+            // get current event
+            XEvent event;
+            XNextEvent(XDisplay, &event);
+    
+            if (event.type == GenericEvent && event.xcookie.extension == xi_op_code) {
+    
+                if (XGetEventData(XDisplay, &event.xcookie)) {
+    
+                    XIRawEvent* raw_event = (XIRawEvent*)event.xcookie.data;
+    
+                    // erm what the sigma
+                    if (raw_event->detail > KeyList::MOUSE5) {
+                        printf("yep: %i\n", raw_event->type);
+                        continue;
+                    }
+
+                    KeyList key_value = (KeyList)raw_event->detail;
+                    
+                    if (raw_event->evtype == XI_RawButtonPress) {
+                        keys.insert(key_value);
+                    }
+                    else if (raw_event->evtype == XI_RawButtonRelease) {
+                        keys.erase(key_value);
+                    }
+                }
+                
+                XFreeEventData(XDisplay, &event.xcookie);
+            }
+        }
+
+        XCloseDisplay(XDisplay);
     }
 
     void click(KeyList vKey) {
@@ -165,17 +168,10 @@ namespace Input {
 
         // check if the key map includes the vKey (pressed)
         if (keys.find(vKey) != keys.end()) {
-            std::cout << "Pressing: " << vKey << "\n";
+            //std::cout << "Pressing: " << vKey << "\n";
             return true;
         }
 
-        std::cout << "not pressing: " << vKey << "\n";
-
         return false;
-    }
-
-    void free_input() {
-        XUngrabPointer(XDisplay, CurrentTime);
-        XCloseDisplay(XDisplay);
     }
 }

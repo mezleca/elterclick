@@ -63,24 +63,26 @@ namespace Config {
             
             const Json::Value key = keys[i];
 
-            if (!key.isMember("trigger") || !key.isMember("target")) {
+            if (!key.isMember("trigger") || !key.isMember("target") || !key.isMember("cps")) {
                 printf("invalid schema for key %i\n", i);
                 continue;
             }
 
             int trigger_keycode = key["trigger"].asInt();
             int target_keycode  = key["target"].asInt();
+            int cps_count       = key["cps"].asInt();
 
             if (trigger_keycode > KeyList::MOUSE5 || target_keycode > KeyList::MOUSE5) {
                 printf("Invalid keycode for key %i\n", i);
                 continue;
             }
             
-            printf("[%i] trigger: %i | target: %i\n", i, trigger_keycode, target_keycode);
+            printf("[%i] trigger: %i | target: %i | cps: %i\n", i, trigger_keycode, target_keycode, cps_count);
 
             config.keys.push_back({
                 trigger: (KeyList)trigger_keycode,
-                target: (KeyList)target_keycode
+                target: (KeyList)target_keycode,
+                cps: cps_count
             });
         }
 
