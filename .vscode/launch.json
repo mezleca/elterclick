@@ -5,7 +5,7 @@
             "name": "Debug Meson Project",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/click",
+            "program": "${workspaceFolder}/builddir/click",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

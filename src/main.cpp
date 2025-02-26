@@ -9,19 +9,26 @@
 
 int main() {
 
-    // create a new thread to input event loop
-    std::thread input_thread(Input::initialize);
-
     Config::initialize();
-    Gui::initialize();
-    
-    while (true) {
-        Gui::update();
-        Autoclick::update();
+
+    // make sure we initialize everything properly
+    if (!Gui::initialize()) {
+        std::cerr << "failed to initialize gui system\n";
+        return -1;
     }
 
+    // create a new thread to input event loop
+    std::thread input_thread(Input::initialize);
+    
+    while (!Gui::done) {
+        Autoclick::update();
+        Gui::update();
+    }
+
+    // close sdl window and shit
     Gui::finish();
 
+    // wait until the input thread is finished
     input_thread.join();
     
     return 0;

@@ -1,54 +1,64 @@
-# TODO:
-# this shit is a mess, gonna learn meson a little more so i can remake this
-
 project(
-    'click', 
-    'c', 
-    'cpp',
-    default_options: 'cpp_std=c++17'
+  'click',
+  ['c', 'cpp'],
+  default_options: [
+    'cpp_std=c++17',
+    'default_library=static',
+  ],
+  version: '0.1.0'
 )
 
-inc_glad = include_directories('dependencies/glad/include')
-inc_imgui = include_directories('dependencies/imgui/')
+cc = meson.get_compiler('c')
+cxx = meson.get_compiler('cpp')
 
-libevdev = dependency('libevdev')
-libx11 = dependency('x11')
-libxinput = dependency('xi')
-libxtest = dependency('xtst')
-libjsoncpp = dependency('jsoncpp', fallback: ['jsoncpp', 'jsoncpp_dep'])
-libglfw = dependency('glfw3', fallback: ['glfw3', 'glfw_dep'])
+libsdl2 = subproject('sdl2')
+libjson = subproject('jsoncpp')
+
 libglad = static_library(
     'glad',
-    'dependencies/glad/src/glad.c',
-    include_directories: inc_glad
+    'extra/glad/src/glad.c',
+    include_directories: include_directories('extra/glad/include')
 )
+
 libimgui = static_library(
     'imgui',
     [
-        'dependencies/imgui/imgui.cpp',
-        'dependencies/imgui/imgui_draw.cpp',
-        'dependencies/imgui/imgui_tables.cpp',
-        'dependencies/imgui/imgui_widgets.cpp',
-        'dependencies/imgui/imgui_impl_opengl3.cpp',
-        'dependencies/imgui/imgui_impl_glfw.cpp'
+        'extra/imgui/imgui.cpp',
+        'extra/imgui/imgui_draw.cpp',
+        'extra/imgui/imgui_tables.cpp',
+        'extra/imgui/imgui_widgets.cpp',
+        'extra/imgui/backends/imgui_impl_opengl3.cpp',
+        'extra/imgui/backends/imgui_impl_sdl2.cpp'
     ],
-    include_directories: inc_imgui
+    dependencies: libsdl2.get_variable('sdl2_dep'),
+    include_directories: [include_directories('extra/imgui/')]
 )
 
-src = files(
-    'src/input/input.cpp',
-    'src/input/input.hpp',
-    'src/config/config.cpp',
-    'src/config/config.hpp',
-    'src/gui/gui.cpp',
-    'src/gui/gui.hpp',
-    'src/main.cpp'
-)
+# wrap shit
+deps = [
+  libsdl2.get_variable('sdl2_dep'),
+  libjson.get_variable('jsoncpp_dep')
+]
+
+host_system = host_machine.system()
+if host_system == 'linux'
+    deps += dependency('x11')
+    deps += dependency('xi')
+    deps += dependency('xtst')
+else
+endif
+
+src_files = [
+  'src/input/input.cpp',
+  'src/config/config.cpp',
+  'src/gui/gui.cpp',
+  'src/main.cpp'
+]
 
 executable(
-    'click', 
-    src, 
-    dependencies: [libevdev, libx11, libxinput, libxtest, libjsoncpp, libglfw],
-    link_with: [libglad, libimgui],
-    include_directories: [inc_glad, inc_imgui]
+  'click',
+  src_files,
+  link_with: [libglad, libimgui],
+  include_directories: [include_directories('extra/glad/include'), include_directories('extra/imgui/')],
+  dependencies: [deps]
 )

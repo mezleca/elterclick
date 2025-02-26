@@ -1,6 +1,4 @@
 #include "config.hpp"
-#include <regex>
-#include <fcntl.h>
 
 std::string default_config_content =
 R"({

@@ -2,15 +2,17 @@
 #include <iostream>
 #include <unistd.h>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <SDL.h>
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_sdl2.h>
 
 namespace Gui {
-    void initialize();
+    bool initialize();
     void update();
     void finish();
     bool is_focused();
-    extern  GLFWwindow* window;
+    extern SDL_Window* window;
+    extern bool done;
 }

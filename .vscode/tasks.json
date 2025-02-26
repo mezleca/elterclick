@@ -26,7 +26,7 @@
         {
             "label": "meson-build",
             "type": "shell",
-            "command": "cd ${workspaceFolder} && meson compile -C build",
+            "command": "cd ${workspaceFolder} && meson compile -C builddir",
             "group": {
                 "kind": "build",
                 "isDefault": true
