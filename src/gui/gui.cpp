@@ -16,7 +16,7 @@ namespace Gui {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         
         #ifdef __linux__
-            const char* glsl_version = "#version 150";
+            const char* glsl_version = "#version 130";
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0); 
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -31,10 +31,6 @@ namespace Gui {
             std::cerr << "failed to initialize SDL2" << "\n";
             return false;
         }
-
-        SDL_SetWindowMinimumSize(window, 500, 300);
-
-        SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     
         window = SDL_CreateWindow(
             "elterclick",   
@@ -42,8 +38,10 @@ namespace Gui {
             SDL_WINDOWPOS_CENTERED,
             width,
             height,
-            window_flags
+            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
         );
+
+        SDL_SetWindowMinimumSize(window, 800, 600);
 
         if (window == nullptr) {
             std::cerr << "failed to cerate window" << "\n";
@@ -53,6 +51,13 @@ namespace Gui {
 
         SDL_GLContext gl_context = SDL_GL_CreateContext(window);
         SDL_GL_MakeCurrent(window, gl_context);
+
+        if (!gl_context) {
+            std::cerr << "failed to create OpenGL context: " << SDL_GetError() << "\n";
+            SDL_DestroyWindow(window);
+            SDL_Quit();
+            return false;
+        }
 
         if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
             std::cerr << "failed to to load glad" << "\n";
@@ -126,11 +131,10 @@ namespace Gui {
         {
             if (ImGui::BeginTabItem("general")) {
 
+                // @TODO: otimize this shit
                 // convert KeyData vector to a string vector
                 std::vector<std::string> item_strings;
                 std::vector<const char*> items;
-
-                // ??
                 item_strings.reserve(config.keys.size());
                 items.reserve(config.keys.size());
 
@@ -143,7 +147,7 @@ namespace Gui {
                 ImGui::Combo("current combination", &current_item, items.data(), config.keys.size());
                 ImGui::SliderInt("cps", &config.keys.at(current_item).cps, 0, 50);
 
-                if (ImGui::Button("create new combination")) {
+                if (ImGui::Button("create")) {
                     
                     bool exists = false;
 
@@ -169,7 +173,7 @@ namespace Gui {
                 
                 ImGui::SameLine();
 
-                if (ImGui::Button("delete combination")) {
+                if (ImGui::Button("delete")) {
 
                     if (config.keys.size() != 1) {
                         
@@ -179,8 +183,6 @@ namespace Gui {
                         if (current_item > (int)config.keys.size() - 1) {
                             current_item = 0;
                         }
-
-                        printf("new length %i - %i\n", current_item, (int)config.keys.size());
                     }
                 }
 
