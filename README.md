@@ -6,12 +6,6 @@
 - randomized cps
 - config system
 
-## dependencies:
-im retarded so if you wanna compile this, make sure you have those dependencies in your system:
-```bash
-jsoncpp, glfw 
-```
-
 # TODO
 - [x] finish config system
 - [x] imgui menu
