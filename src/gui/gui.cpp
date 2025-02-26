@@ -1,11 +1,11 @@
 #include "gui.hpp"
+#include "../config/config.hpp"
 
 namespace Gui {
 
     SDL_Window* window = NULL;
     bool done = false;
-    int width = 1280;
-    int height = 720;
+    int width = 800, height = 600, current_item = 0;
 
     bool initialize() {
                         
@@ -103,14 +103,13 @@ namespace Gui {
             }
         }
 
-        if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED) {
-            SDL_Delay(10);
+        if (!is_focused()) {
+            SDL_GL_SwapWindow(window);
             return;
         }
 
         static auto& io = ImGui::GetIO();
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-        bool show_another_window = true;
         
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();
@@ -121,17 +120,93 @@ namespace Gui {
         ImGui::SetNextWindowSize(ImVec2(width, height));
         ImGui::SetNextWindowPos(ImVec2(0, 0));
 
-        ImGui::Begin("Another Window", &show_another_window, flags);
-        ImGui::Text("Hello from another window!");
-        if (ImGui::Button("Close Me"))
-            show_another_window = false;
-        ImGui::End();
+        ImGui::Begin("elterclick", NULL, flags);
 
+        if (ImGui::BeginTabBar("Tabs", flags))
+        {
+            if (ImGui::BeginTabItem("general")) {
+
+                // convert KeyData vector to a string vector
+                std::vector<std::string> item_strings;
+                std::vector<const char*> items;
+
+                // ??
+                item_strings.reserve(config.keys.size());
+                items.reserve(config.keys.size());
+
+                // surely this wont crash
+                for (size_t i = 0; i < config.keys.size(); i++) {
+                    item_strings.push_back(Input::to_string(config.keys.at(i).trigger) + " -> " + Input::to_string(config.keys.at(i).target));
+                    items.push_back(item_strings.back().c_str());
+                }
+
+                ImGui::Combo("current combination", &current_item, items.data(), config.keys.size());
+                ImGui::SliderInt("cps", &config.keys.at(current_item).cps, 0, 50);
+
+                if (ImGui::Button("create new combination")) {
+                    
+                    bool exists = false;
+
+                    // check if theres already a not set key thing
+                    for (size_t i = 0; i < config.keys.size(); i++) {
+
+                        KeyData key = config.keys.at(i);
+
+                        if (key.trigger == KeyList::NOT_SET) {
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                    // dont create a new one if theres already a unset keybind
+                    if (!exists) {
+                        KeyData new_comb;
+                        new_comb.trigger = KeyList::NOT_SET;
+                        new_comb.target = KeyList::NOT_SET;
+                        config.keys.push_back(new_comb);
+                    }
+                }
+                
+                ImGui::SameLine();
+
+                if (ImGui::Button("delete combination")) {
+
+                    if (config.keys.size() != 1) {
+                        
+                        auto it = config.keys.begin() + current_item;
+                        config.keys.erase(it);
+        
+                        if (current_item > (int)config.keys.size() - 1) {
+                            current_item = 0;
+                        }
+
+                        printf("new length %i - %i\n", current_item, (int)config.keys.size());
+                    }
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("config")) {
+
+                if (ImGui::Button("save")) {
+                    Config::save();
+                }
+
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
+        }
+
+        ImGui::End();
         ImGui::Render();
+
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());;
+
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         SDL_GL_SwapWindow(window);
     }
 

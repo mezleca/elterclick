@@ -14,7 +14,7 @@ jsoncpp, glfw
 
 # TODO
 - [x] finish config system
-- [ ] imgui menu
+- [x] imgui menu
 - [ ] windows support
 - [ ] keyboard trigger/target support
 - [ ] mouse scroll??

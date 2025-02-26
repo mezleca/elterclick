@@ -5,7 +5,12 @@
 			"cps" : 16,
 			"target" : 1,
 			"trigger" : 9
+		},
+		{
+			"cps" : 16,
+			"target" : 8,
+			"trigger" : 2
 		}
 	],
-	"randomized" : true
+	"randomized" : false
 }

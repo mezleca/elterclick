@@ -13,6 +13,8 @@ namespace Gui {
     void update();
     void finish();
     bool is_focused();
+
     extern SDL_Window* window;
     extern bool done;
+    extern int current_item;
 }

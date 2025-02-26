@@ -10,6 +10,31 @@ namespace Input {
     Display* XDisplay = NULL;
     std::unordered_set<KeyList> keys;
 
+    std::string to_string(KeyList vKey) {
+        
+        if (vKey < KeyList::NOT_SET || vKey > KeyList::MOUSE5) {
+            return "INVALID";
+        }
+
+        switch (vKey)
+        {
+            case KeyList::LEFT:
+                return "left";
+            case KeyList::NOT_SET:
+                return "not set";
+            case KeyList::RIGHT:
+                return "right";
+            case KeyList::MIDDLE:
+                return "middle";
+            case KeyList::MOUSE4:
+                return "mouse4";
+            case KeyList::MOUSE5:
+                return "mouse5";
+        }
+
+        return "invalid";
+    }
+
     void initialize() {
         
         // could pass NULL but yeah
