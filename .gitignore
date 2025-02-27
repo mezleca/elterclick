@@ -8,6 +8,7 @@
 /.vscode
 
 builddir
+config.json
 
 subprojects/*
 !subprojects/*.wrap
