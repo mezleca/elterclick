@@ -13,6 +13,7 @@ cxx = meson.get_compiler('cpp')
 
 libsdl2 = subproject('sdl2')
 libjson = subproject('jsoncpp')
+libimgui = subproject('imgui')
 
 libglad = static_library(
     'glad',
@@ -20,24 +21,11 @@ libglad = static_library(
     include_directories: include_directories('extra/glad/include')
 )
 
-libimgui = static_library(
-    'imgui',
-    [
-        'extra/imgui/imgui.cpp',
-        'extra/imgui/imgui_draw.cpp',
-        'extra/imgui/imgui_tables.cpp',
-        'extra/imgui/imgui_widgets.cpp',
-        'extra/imgui/backends/imgui_impl_opengl3.cpp',
-        'extra/imgui/backends/imgui_impl_sdl2.cpp'
-    ],
-    dependencies: libsdl2.get_variable('sdl2_dep'),
-    include_directories: [include_directories('extra/imgui/')]
-)
-
 # wrap shit
 deps = [
   libsdl2.get_variable('sdl2_dep'),
-  libjson.get_variable('jsoncpp_dep')
+  libjson.get_variable('jsoncpp_dep'),
+  libimgui.get_variable('imgui_dep')
 ]
 
 host_system = host_machine.system()
@@ -58,7 +46,7 @@ src_files = [
 executable(
   'click',
   src_files,
-  link_with: [libglad, libimgui],
-  include_directories: [include_directories('extra/glad/include'), include_directories('extra/imgui/')],
+  link_with: [libglad],
+  include_directories: [include_directories('extra/glad/include')],
   dependencies: [deps]
 )
