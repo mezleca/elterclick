@@ -9,6 +9,7 @@
 # TODO
 - [x] finish config system
 - [x] imgui menu
-- [ ] windows support
+- [x] hotkey system
+- [x] mouse scroll bind (still need some fixes)
 - [ ] keyboard trigger/target support
-- [ ] mouse scroll??
+- [ ] windows support

@@ -8,12 +8,7 @@
 #include <json/json.h>
 
 #include "../input/input.hpp"
-
-struct KeyData {
-    KeyList trigger = KeyList::MOUSE5;
-    KeyList target = KeyList::LEFT;
-    int cps = 12;
-};
+#include "../common.hpp"
 
 struct ConfigData {
     std::vector<KeyData> keys;    

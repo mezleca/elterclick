@@ -1,5 +1,30 @@
 #include "gui.hpp"
-#include "../config/config.hpp"
+
+namespace ImGuiCustom {
+
+    KeyList hotkey(const char* label, KeyList* key, float samelineOffset) {
+   
+        const unsigned int id = ImGui::GetID(label);
+        KeyList selected_key = KeyList::INVALID;
+
+        ImGui::PushID(label);
+
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetColorU32(ImGuiCol_ButtonActive));
+        ImGui::Button(Input::to_string(*key).c_str(), { 150.0f, 0.0f });
+        ImGui::PopStyleColor();
+
+        bool hover = ImGui::IsItemHovered();
+
+        // if the user is hovering and pressing a key, update the KeyList values
+        if (hover && Input::keys.size() != 0) {
+            selected_key = Input::keys.back();
+        }
+
+        ImGui::PopID();
+        
+        return selected_key;
+    }
+}
 
 namespace Gui {
 
@@ -137,6 +162,7 @@ namespace Gui {
                 std::vector<const char*> items;
                 item_strings.reserve(config.keys.size());
                 items.reserve(config.keys.size());
+                KeyData* current_key = &config.keys.at(current_item);
 
                 // surely this wont crash
                 for (size_t i = 0; i < config.keys.size(); i++) {
@@ -144,8 +170,8 @@ namespace Gui {
                     items.push_back(item_strings.back().c_str());
                 }
 
-                ImGui::Combo("current combination", &current_item, items.data(), config.keys.size());
-                ImGui::SliderInt("cps", &config.keys.at(current_item).cps, 0, 50);
+                ImGui::Text("combinations");
+                ImGui::Combo("##combination", &current_item, items.data(), config.keys.size());
 
                 if (ImGui::Button("create")) {
                     
@@ -184,6 +210,38 @@ namespace Gui {
                             current_item = 0;
                         }
                     }
+                }
+
+                ImGui::Text("cps");
+                ImGui::SliderInt("##cps", &current_key->cps, 0, 50);
+
+                ImGuiTableFlags table_flags = ImGuiTableFlags_SizingFixedFit;
+
+                ImGui::Checkbox("randomizer", &config.randomized);
+
+                ImGui::Text("keybinds");
+                if (ImGui::BeginTable("keytable", 2, table_flags, ImVec2(width / 2, 0.0f))) {
+                
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+
+                    KeyList new_trigger_key = ImGuiCustom::hotkey("trigger", &current_key->trigger);
+
+                    // make sure the trigger is not equal to the target
+                    if (new_trigger_key > KeyList::NOT_SET && current_key->target != new_trigger_key) {
+                        current_key->trigger = new_trigger_key;
+                    }
+
+                    ImGui::TableSetColumnIndex(1);
+                    
+                    KeyList new_target_key = ImGuiCustom::hotkey("target", &current_key->target);
+
+                    // make sure the target is not equal to the trigger
+                    if (new_target_key > KeyList::NOT_SET && current_key->trigger != new_target_key) {
+                        current_key->target = new_target_key;
+                    }
+
+                    ImGui::EndTable();
                 }
 
                 ImGui::EndTabItem();

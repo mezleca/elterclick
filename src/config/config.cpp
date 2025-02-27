@@ -92,7 +92,7 @@ namespace Config {
             int target_keycode  = key["target"].asInt();
             int cps_count       = key["cps"].asInt();
 
-            if (trigger_keycode > KeyList::MOUSE5 || target_keycode > KeyList::MOUSE5) {
+            if (trigger_keycode > KeyList::MAX_VALUE || target_keycode > KeyList::MAX_VALUE) {
                 printf("Invalid keycode for key %i\n", i);
                 continue;
             }
@@ -126,7 +126,7 @@ namespace Config {
 
             key["trigger"] = current_key.trigger;
             key["target"] = current_key.target;
-            key["cps"] = 0;
+            key["cps"] = current_key.cps;
 
             keys.append(key);
         }

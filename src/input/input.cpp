@@ -1,38 +1,42 @@
 #include "input.hpp"
-#include <X11/extensions/XInput2.h>
-#include <X11/extensions/XTest.h>
-#include <fcntl.h>
-#include <src/config/config.hpp>
-#include <src/gui/gui.hpp>
 
 namespace Input {
 
     Display* XDisplay = NULL;
-    std::unordered_set<KeyList> keys;
+    std::vector<KeyList> keys;
 
     std::string to_string(KeyList vKey) {
         
-        if (vKey < KeyList::NOT_SET || vKey > KeyList::MOUSE5) {
-            return "INVALID";
+        if (vKey > KeyList::MAX_VALUE) {
+            return "invalid";
         }
 
         switch (vKey)
         {
-            case KeyList::LEFT:
-                return "left";
+            case KeyList::INVALID:
+                return "invalid";
             case KeyList::NOT_SET:
                 return "not set";
+            case KeyList::LEFT:
+                return "left";
             case KeyList::RIGHT:
                 return "right";
             case KeyList::MIDDLE:
                 return "middle";
+            case KeyList::SCROLLUP:
+                return "scroll up";
+            case KeyList::SCROLLDOWN:
+                return "scroll down";
+            case KeyList::PSCROLL_DOWN:
+            case KeyList::PSCROLL_LEFT:
+                return "no idea";
             case KeyList::MOUSE4:
                 return "mouse4";
             case KeyList::MOUSE5:
                 return "mouse5";
+            default:
+                return "invalid";
         }
-
-        return "invalid";
     }
 
     void initialize() {
@@ -83,25 +87,31 @@ namespace Input {
             XEvent event;
             XNextEvent(XDisplay, &event);
     
+            // @TODO: fix being almost impossible to bind scrollup/down on linux due to gui not updating on time
             if (event.type == GenericEvent && event.xcookie.extension == xi_op_code) {
     
                 if (XGetEventData(XDisplay, &event.xcookie)) {
     
                     XIRawEvent* raw_event = (XIRawEvent*)event.xcookie.data;
+                    KeyList key_value = (KeyList)raw_event->detail;
     
                     // erm what the sigma
-                    if (raw_event->detail > KeyList::MOUSE5) {
-                        printf("yep: %i\n", raw_event->type);
+                    if (key_value > KeyList::MAX_VALUE) {
+                        printf("yep: %i\n", raw_event->detail);
                         continue;
                     }
-
-                    KeyList key_value = (KeyList)raw_event->detail;
                     
                     if (raw_event->evtype == XI_RawButtonPress) {
-                        keys.insert(key_value);
+                        keys.push_back(key_value);
                     }
                     else if (raw_event->evtype == XI_RawButtonRelease) {
-                        keys.erase(key_value);
+
+                        auto it = std::find(keys.begin(), keys.end(), key_value);
+
+                        if (it != keys.end()) {
+                            int index = std::distance(keys.begin(), it);
+                            keys.erase(keys.begin() + index);
+                        }
                     }
                 }
                 
@@ -127,8 +137,10 @@ namespace Input {
 
     bool is_pressing_key(KeyList vKey) {
 
+        auto it = std::find(keys.begin(), keys.end(), vKey);
+
         // check if the key map includes the vKey (pressed)
-        if (keys.find(vKey) != keys.end()) {
+        if (it != keys.end()) {
             return true;
         }
 
@@ -151,7 +163,7 @@ namespace Autoclick {
         }
 
         // if the user is not pressing anything, sleep for 10ms
-        if (config.keys.empty()) {
+        if (config.keys.size() == 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             return;
         }

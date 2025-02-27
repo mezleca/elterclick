@@ -1,24 +1,12 @@
 #pragma once
 
-#include <cstdlib>
-#include <iostream>
-#include <unistd.h>
-#include <chrono>
-#include <thread>
-#include <string>
-#include <string.h>
-#include <unordered_set>
 #include <X11/Xlib.h>
+#include <X11/extensions/XInput2.h>
+#include <X11/extensions/XTest.h>
 
-enum KeyList {
-    INVALID = -1,
-    NOT_SET, // uuh, surely it starts with index 1 right
-    LEFT = 1,
-    MIDDLE,
-    RIGHT,
-    MOUSE4 = 8,
-    MOUSE5
-};
+#include "../config/config.hpp"
+#include "../gui/gui.hpp"
+#include "../common.hpp"
 
 namespace Autoclick {
     void update();
@@ -31,6 +19,6 @@ namespace Input {
 
     std::string to_string(KeyList vKey);
 
-    extern std::unordered_set<KeyList> keys;
+    extern std::vector<KeyList> keys;
     extern Display* XDisplay;
 }
