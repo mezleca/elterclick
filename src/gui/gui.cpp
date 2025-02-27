@@ -2,9 +2,9 @@
 
 namespace ImGuiCustom {
 
+    // @TODO: "press to change" text on hover
     KeyList hotkey(const char* label, KeyList* key, float samelineOffset) {
    
-        const unsigned int id = ImGui::GetID(label);
         KeyList selected_key = KeyList::INVALID;
 
         ImGui::PushID(label);
@@ -146,6 +146,7 @@ namespace Gui {
         ImGui::NewFrame();
     
         static constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove;
+        static constexpr ImGuiTableFlags table_flags = ImGuiTableFlags_SizingFixedFit;
     
         ImGui::SetNextWindowSize(ImVec2(width, height));
         ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -213,7 +214,7 @@ namespace Gui {
                 }
 
                 ImGui::Text("cps");
-                
+
                 ImGui::SliderInt("##cps", &current_key->cps, 0, 50);
                 ImGui::Checkbox("randomizer", &config.randomized);
 

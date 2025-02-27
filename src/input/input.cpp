@@ -122,7 +122,10 @@ namespace Input {
         XCloseDisplay(XDisplay);
     }
 
+    // @TODO: windows
     void click(KeyList vKey) {
+
+        #ifdef __linux__
 
         if (XDisplay == NULL) {
             printf("failed to get display\n");
@@ -133,18 +136,19 @@ namespace Input {
         XFlush(XDisplay);
         XTestFakeButtonEvent(XDisplay, (int)vKey, false, CurrentTime);
         XFlush(XDisplay);
+        #else
+        // @TODO: making input for different keys on windows in a pain in the ass
+        // why tf do i need different flags for different keys???
+        #endif
     }
 
     bool is_pressing_key(KeyList vKey) {
-
+        #ifdef __linux__
         auto it = std::find(keys.begin(), keys.end(), vKey);
-
-        // check if the key map includes the vKey (pressed)
-        if (it != keys.end()) {
-            return true;
-        }
-
-        return false;
+        return it != keys.end();
+        #else
+        return (GetKeyState((int)vKey) & 0x8000) != 0;
+        #endif
     }
 }
 
