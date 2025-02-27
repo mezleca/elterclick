@@ -179,6 +179,11 @@ namespace Autoclick {
                 continue;
             }
 
+            // make sure target is set
+            if (key.target == KeyList::NOT_SET) {
+                continue;
+            }
+
             Input::click(key.target);
 
             auto target_delay = 1000 / key.cps;
