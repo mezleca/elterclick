@@ -92,7 +92,7 @@ namespace Config {
             int target_keycode  = key["target"].asInt();
             int cps_count       = key["cps"].asInt();
 
-            if (trigger_keycode > KeyList::MAX_VALUE || target_keycode > KeyList::MAX_VALUE) {
+            if (trigger_keycode < KeyList::NOT_SET || target_keycode > KeyList::MAX_VALUE) {
                 printf("Invalid keycode for key %i\n", i);
                 continue;
             }

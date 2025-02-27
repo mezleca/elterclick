@@ -213,10 +213,8 @@ namespace Gui {
                 }
 
                 ImGui::Text("cps");
+                
                 ImGui::SliderInt("##cps", &current_key->cps, 0, 50);
-
-                ImGuiTableFlags table_flags = ImGuiTableFlags_SizingFixedFit;
-
                 ImGui::Checkbox("randomizer", &config.randomized);
 
                 ImGui::Text("keybinds");
