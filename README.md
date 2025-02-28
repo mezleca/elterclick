@@ -5,6 +5,6 @@
 - [x] imgui menu
 - [x] hotkey system
 - [x] mouse scroll bind (still need some fixes)
-- [ ] imgui wrap thing
+- [x] imgui from meson
 - [ ] keyboard trigger/target support
 - [ ] windows support
